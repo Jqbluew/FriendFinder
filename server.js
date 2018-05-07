@@ -1,26 +1,24 @@
-var express = require ('express');
-var app = express ();
-var bodyParser = require('body-parser');
+//Dependencies
+var express = require("express");
+var bodyParser = require("body-parser");
+var path = require("path");
 
+//Express Configuration
+var app = express();
 var PORT = process.env.PORT || 8080;
 
-//create application/
-app.use(bodyParser.urlencoded({extended: true}));
+// Using BodyParser NPM makes it possible for our server to interpret data sent to it.
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.text());
+app.use(bodyParser.json({ type: "application/vnd.api+json" }));
+app.use(express.static(path.join(__dirname, '/app/public')));
 
+//Router: points our server to the app route files
+require("./app/routing/apiRoutes")(app);
+require("./app/routing/htmlRoutes")(app);
 
-// parse various different custom JSON types as JSON
-app.use(bodyParser.json({ type: 'application/*+json' }))
-
-// parse some custom thing into a Buffer
-app.use(bodyParser.raw({ type: 'application/vnd.custom-type' }))
-
- 
-// parse an HTML body into a string
-app.use(bodyParser.text({ type: 'text/html' }))
-
-require("./app/routing/api-routes.js")(app);
-require("./app/routing/html-routes.js")(app);
-
+//Listener: starts our server
 app.listen(PORT, function() {
-	console.log("App listening on PORT: " + PORT);
+    console.log("App is listening on PORT: " + PORT);
 });
